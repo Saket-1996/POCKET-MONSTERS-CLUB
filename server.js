@@ -22,7 +22,8 @@ username TEXT UNIQUE,
 password TEXT,
 phone TEXT,
 instagram TEXT,
-starter TEXT
+starter TEXT,
+badges INTEGER DEFAULT 0
 )
 `);
 
@@ -210,3 +211,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Server running on port " + PORT);
 });
+
