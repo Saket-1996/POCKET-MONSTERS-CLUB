@@ -1,0 +1,127 @@
+body {
+    font-family: Arial;
+    text-align: center;
+    background: linear-gradient(#ff0000, #ffffff);
+}
+
+h1 {
+    color: #ffcc00;
+    text-shadow: 2px 2px black;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 5px;
+    font-size: 16px;
+}
+
+input {
+    padding: 10px;
+    margin: 5px;
+}
+
+#starterGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+#starterGrid div {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+#starterGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.starter-card {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.poke-img {
+    width: 80px;
+    height: 80px;
+    image-rendering: pixelated;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(#ff0000, #ffffff);
+    text-align: center;
+}
+
+#starterGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 25px;
+    padding: 30px;
+}
+
+.starter-card {
+    background: white;
+    border-radius: 15px;
+    padding: 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.starter-card:hover {
+    transform: scale(1.08);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
+}
+
+.poke-img {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+button {
+    margin-top: 8px;
+    padding: 6px 14px;
+    border: none;
+    border-radius: 8px;
+    background: #ffcc00;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #ff9900;
+}
+
+.trainer-card {
+    background: white;
+    padding: 25px;
+    width: 320px;
+    margin: auto;
+    border-radius: 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.gym-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 30px;
+}
+
+.gym-card {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}

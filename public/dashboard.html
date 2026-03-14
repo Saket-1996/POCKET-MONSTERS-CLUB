@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Starter Selection</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <h1>Select Your Starter</h1>
+
+    <div id="starterGrid"></div>
+
+    <script>
+        // login protection
+        if (!localStorage.getItem("trainer")) {
+            window.location = "login.html";
+        }
+    </script>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,25 @@
+<h1>Award Badge</h1>
+
+<input id="trainer" placeholder="Trainer Username">
+
+<button onclick="award()">Give Badge</button>
+
+<script>
+    async function award() {
+
+        const username = document.getElementById("trainer").value;
+
+        await fetch("/awardBadge", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                username
+            })
+        });
+
+        alert("Badge awarded");
+
+    }
+</script>

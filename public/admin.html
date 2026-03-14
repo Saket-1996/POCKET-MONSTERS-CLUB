@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Admin Panel</title>
+</head>
+
+<body>
+
+    <h1>Admin Panel</h1>
+
+    <button id="resetBtn">Reset All Starters</button>
+
+    <script>
+        document.getElementById("resetBtn").onclick = async function() {
+
+            try {
+
+                const res = await fetch("/resetAllStarters", {
+                    method: "POST"
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    alert("All starters reset");
+                } else {
+                    alert("Reset failed");
+                }
+
+            } catch (e) {
+                alert("Server error");
+            }
+
+        };
+    </script>
+
+</body>
+
+</html>
