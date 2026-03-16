@@ -179,6 +179,30 @@ async function selectStarter(pokemon) {
     }
 
 }
+async function loadTrainer(){
+
+const username = localStorage.getItem("trainer");
+
+const res = await fetch("/trainer/"+username);
+
+const data = await res.json();
+
+if(!data) return;
+
+document.getElementById("trainerName").innerText = data.username;
+document.getElementById("badges").innerText = data.badges;
+
+if(data.starter){
+
+document.getElementById("starterName").innerText = data.starter;
+
+const name = data.starter.toLowerCase();
+
+document.getElementById("starterGif").src = "/pokemon/"+name+".gif";
+
+}
+
+}
 
 
 
