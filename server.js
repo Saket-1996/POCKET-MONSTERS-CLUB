@@ -25,6 +25,7 @@ instagram TEXT,
 starter TEXT,
 badges INTEGER DEFAULT 0
 )
+ALTER TABLE trainers ADD COLUMN seasonPass INTEGER DEFAULT 0;
 `);
 
 
