@@ -1,38 +1,176 @@
 <!DOCTYPE html>
 <html>
-<h2 id="trainerName"></h2>
 
-<p>Badges: <span id="badges">0</span></p>
-
-<img id="starterGif" width="120">
-
-<p id="starterName"></p>
-
-<div id="seasonPassBox"></div>
-<div id="seasonPassBox">
-<h3>Season Pass</h3>
-<p>₹45 / month required for league battles</p>
-<button onclick="buyPass()">Activate Pass</button>
-</div>
 <head>
-    <title>Starter Selection</title>
-    <link rel="stylesheet" href="style.css">
+<title>Trainer Dashboard</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+body{
+font-family: Arial;
+text-align:center;
+background:linear-gradient(red,white);
+}
+
+.card{
+background:#e6e6e6;
+width:350px;
+margin:auto;
+padding:25px;
+border-radius:20px;
+box-shadow:0px 10px 20px rgba(0,0,0,0.2);
+}
+
+button{
+background:#ffcc00;
+border:none;
+padding:12px 18px;
+border-radius:10px;
+font-size:16px;
+cursor:pointer;
+margin:10px;
+}
+
+button:hover{
+background:#ffb300;
+}
+
+#starterGif{
+margin-top:10px;
+}
+
+</style>
+
 </head>
 
 <body>
 
-    <h1>Select Your Starter</h1>
+<h1 style="color:yellow;text-shadow:2px 2px black;">
+Your Trainer Profile
+</h1>
 
-    <div id="starterGrid"></div>
+<div class="card">
 
-    <script>
-        // login protection
-        if (!localStorage.getItem("trainer")) {
-            window.location = "login.html";
-        }
-    </script>
+<h3>Trainer: <span id="trainerName">...</span></h3>
 
-    <script src="script.js"></script>
+<p>Starter: <span id="starterName">Not Selected</span></p>
+
+<img id="starterGif" width="120">
+
+<p>Phone: <span id="phone"></span></p>
+
+<p>Instagram: <span id="instagram"></span></p>
+
+<p>Badges: <span id="badges">0</span></p>
+
+<div id="seasonPassBox"></div>
+
+</div>
+
+<br>
+
+<button onclick="location.href='gyms.html'">
+Challenge Gyms
+</button>
+
+<button onclick="location.href='starters.html'">
+Starter Selection
+</button>
+
+
+<script>
+
+async function loadTrainer(){
+
+const username = localStorage.getItem("trainer");
+
+if(!username){
+alert("Please login again");
+window.location.href="login.html";
+return;
+}
+
+const res = await fetch("/trainer/"+username);
+
+const data = await res.json();
+
+if(!data){
+return;
+}
+
+document.getElementById("trainerName").innerText =
+data.username || "";
+
+document.getElementById("starterName").innerText =
+data.starter || "Not Selected";
+
+document.getElementById("badges").innerText =
+data.badges || 0;
+
+document.getElementById("phone").innerText =
+data.phone || "";
+
+document.getElementById("instagram").innerText =
+data.instagram || "";
+
+if(data.starter){
+
+const starter = data.starter.toLowerCase();
+
+document.getElementById("starterGif").src =
+"/pokemon/"+starter+".gif";
+
+}
+
+if(data.seasonPass==1){
+
+document.getElementById("seasonPassBox").innerHTML =
+"<b>Season Pass Active</b>";
+
+}else{
+
+document.getElementById("seasonPassBox").innerHTML =
+"<button onclick='buyPass()'>Activate Season Pass ₹45</button>";
+
+}
+
+}
+
+
+async function buyPass(){
+
+const username = localStorage.getItem("trainer");
+
+const res = await fetch("/activatePass",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({username})
+
+});
+
+const data = await res.json();
+
+if(data.success){
+
+alert("Season Pass Activated");
+
+loadTrainer();
+
+}
+
+}
+
+
+window.onload = loadTrainer;
+
+</script>
 
 </body>
 
