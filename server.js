@@ -4,6 +4,7 @@ process.on("uncaughtException", (err) => {
 
 const express = require("express");
 const sqlite3 = require("sqlite3").verbose();
+const path = require("path");
 
 const app = express();
 
@@ -11,8 +12,8 @@ app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// DATABASE
 const db = new sqlite3.Database("database.db");
-
 
 // CREATE TABLE
 db.run(`
@@ -23,217 +24,221 @@ password TEXT,
 phone TEXT,
 instagram TEXT,
 starter TEXT,
-badges INTEGER DEFAULT 0
+badges INTEGER DEFAULT 0,
+seasonPass INTEGER DEFAULT 0
 )
-ALTER TABLE trainers ADD COLUMN seasonPass INTEGER DEFAULT 0;
 `);
 
 
 // REGISTER
 app.post("/register", (req, res) => {
 
-    const { username, password, phone, instagram } = req.body;
+const {username,password,phone,instagram} = req.body;
 
-    db.run(
-        "INSERT INTO trainers(username,password,phone,instagram) VALUES(?,?,?,?)", [username, password, phone, instagram],
-        (err) => {
+if(!username || !password){
+return res.json({success:false});
+}
 
-            if (err) {
-                res.json({ success: false });
-            } else {
-                res.json({ success: true });
-            }
+db.run(
+"INSERT INTO trainers(username,password,phone,instagram) VALUES(?,?,?,?)",
+[username,password,phone,instagram],
+(err)=>{
 
-        });
+if(err){
+console.log(err);
+return res.json({success:false});
+}
+
+res.json({success:true});
+
+});
 
 });
 
 
 // LOGIN
-app.post("/login", (req, res) => {
+app.post("/login",(req,res)=>{
 
-    const { username, password } = req.body;
+const {username,password} = req.body;
 
-    db.get(
-        "SELECT * FROM trainers WHERE username=? AND password=?", [username, password],
-        (err, row) => {
-
-            if (!row) {
-                return res.json({ success: false });
-            }
-
-            // send starter info too
-            res.json({
-                success: true,
-                starter: row.starter
-            });
-
-        });
-
-});
-
-
-// GET TAKEN STARTERS
-app.get("/starters", (req, res) => {
-
-    db.all(
-        "SELECT starter FROM trainers WHERE starter IS NOT NULL",
-        (err, rows) => {
-
-            const taken = rows.map(r => r.starter);
-
-            res.json({ taken });
-
-        });
-
-});
-
-
-// SELECT STARTER
-app.post("/selectStarter", (req, res) => {
-
-const username = req.body.username;
-const starter = req.body.starter;
-
-console.log("Request:", username, starter);
-
-if (!username || !starter) {
-    return res.json({ success: false });
+if(!username || !password){
+return res.json({success:false});
 }
 
 db.get(
-    "SELECT starter FROM trainers WHERE username=?", [username],
-    (err, row) => {
+"SELECT * FROM trainers WHERE username=? AND password=?",
+[username,password],
+(err,row)=>{
 
-        if (err) {
-            console.log("DB error:", err);
-            return res.json({ success: false });
-        }
+if(err){
+console.log(err);
+return res.json({success:false});
+}
 
-        if (!row) {
-            return res.json({ success: false });
-        }
+if(!row){
+return res.json({success:false});
+}
 
-        // already has starter
-        if (row.starter) {
-            return res.json({ success: false });
-        }
-
-        // check if starter already taken
-        app.post("/selectStarter", (req, res) => {
-
-            const { username, starter } = req.body;
-
-            db.run(
-                "UPDATE trainers SET starter=? WHERE username=?", [starter, username],
-                function(err) {
-
-                    if (err) {
-                        console.log(err);
-                        return res.json({ success: false });
-                    }
-
-                    res.json({ success: true });
-
-                });
-
-        });
-
-
-        db.run(
-            "UPDATE trainers SET starter=? WHERE username=?", [starter, username],
-            function(err3) {
-
-                if (err3) {
-                    console.log("Update error:", err3);
-                    return res.json({ success: false });
-                }
-
-                res.json({ success: true });
-
-            }
-        );
-
-    }
-);
+res.json({
+success:true,
+starter:row.starter,
+badges:row.badges,
+seasonPass:row.seasonPass
+});
 
 });
 
 });
 
-app.post("/resetAllStarters", (req, res) => {
 
-    db.run("UPDATE trainers SET starter = ?", [null], function(err) {
+// SELECT STARTER (FREE SELECTION)
+app.post("/selectStarter",(req,res)=>{
 
-        if (err) {
-            console.log("RESET ERROR:", err);
-            return res.json({ success: false });
-        }
+const {username,starter} = req.body;
 
-        console.log("All starters reset");
+if(!username || !starter){
+return res.json({success:false});
+}
 
-        res.json({ success: true });
+db.run(
+"UPDATE trainers SET starter=? WHERE username=?",
+[starter,username],
+(err)=>{
 
-    });
+if(err){
+console.log(err);
+return res.json({success:false});
+}
 
-});
-
-app.get("/trainer/:username", (req, res) => {
-
-    const username = req.params.username;
-
-    db.get(
-        "SELECT * FROM trainers WHERE username=?", [username],
-        (err, row) => {
-
-            res.json(row);
-
-        }
-
-    );
+res.json({success:true});
 
 });
-
-app.post("/activatePass", (req, res) => {
-
-    const { username } = req.body;
-
-    db.run(
-        "UPDATE trainers SET seasonPass=1 WHERE username=?", [username],
-        (err) => {
-
-            if (err) {
-                return res.json({ success: false });
-            }
-
-            res.json({ success: true });
-
-        });
 
 });
 
 
-app.post("/awardBadge", (req, res) => {
+// ACTIVATE SEASON PASS
+app.post("/activatePass",(req,res)=>{
 
-    const { username } = req.body;
+const {username} = req.body;
 
-    db.run(
-        "UPDATE trainers SET badges = badges + 1 WHERE username=?", [username],
-        (err) => {
+if(!username){
+return res.json({success:false});
+}
 
-            if (err) {
-                return res.json({ success: false });
-            }
+db.run(
+"UPDATE trainers SET seasonPass=1 WHERE username=?",
+[username],
+(err)=>{
 
-            res.json({ success: true });
+if(err){
+console.log(err);
+return res.json({success:false});
+}
 
-        });
+res.json({success:true});
+
+});
 
 });
 
 
+// CHECK SEASON PASS
+app.get("/checkPass/:username",(req,res)=>{
+
+const username=req.params.username;
+
+db.get(
+"SELECT seasonPass FROM trainers WHERE username=?",
+[username],
+(err,row)=>{
+
+if(err || !row){
+return res.json({allowed:false});
+}
+
+if(row.seasonPass==1){
+return res.json({allowed:true});
+}
+
+res.json({allowed:false});
+
+});
+
+});
+
+
+// AWARD BADGE
+app.post("/awardBadge",(req,res)=>{
+
+const {username} = req.body;
+
+db.run(
+"UPDATE trainers SET badges = badges + 1 WHERE username=?",
+[username],
+(err)=>{
+
+if(err){
+console.log(err);
+return res.json({success:false});
+}
+
+res.json({success:true});
+
+});
+
+});
+
+
+// GET TRAINER PROFILE
+app.get("/trainer/:username",(req,res)=>{
+
+const username=req.params.username;
+
+db.get(
+"SELECT username,starter,badges,seasonPass FROM trainers WHERE username=?",
+[username],
+(err,row)=>{
+
+if(err || !row){
+return res.json({success:false});
+}
+
+res.json(row);
+
+});
+
+});
+
+
+// RESET STARTERS
+app.post("/resetAllStarters",(req,res)=>{
+
+db.run(
+"UPDATE trainers SET starter = NULL",
+(err)=>{
+
+if(err){
+console.log(err);
+return res.json({success:false});
+}
+
+res.json({success:true});
+
+});
+
+});
+
+
+// HOMEPAGE
+app.get("/",(req,res)=>{
+res.sendFile(path.join(__dirname,"public","index.html"));
+});
+
+
+// SERVER PORT
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-    console.log("Server running on port " + PORT);
+app.listen(PORT,()=>{
+console.log("Server running on port " + PORT);
 });
