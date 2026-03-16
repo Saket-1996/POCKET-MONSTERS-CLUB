@@ -96,21 +96,27 @@ app.post("/selectStarter",(req,res)=>{
 
 const {username,starter} = req.body;
 
-if(!username || !starter){
-return res.json({success:false});
+db.get(
+"SELECT starter FROM trainers WHERE username=?",
+[username],
+(err,row)=>{
+
+if(row && row.starter){
+return res.json({success:false,message:"Starter already chosen"});
 }
 
 db.run(
 "UPDATE trainers SET starter=? WHERE username=?",
 [starter,username],
-(err)=>{
+(err2)=>{
 
-if(err){
-console.log(err);
+if(err2){
 return res.json({success:false});
 }
 
 res.json({success:true});
+
+});
 
 });
 
