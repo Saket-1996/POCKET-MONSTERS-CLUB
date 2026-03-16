@@ -211,25 +211,31 @@ async function loadTrainer(){
 
 const username = localStorage.getItem("trainer");
 
-if(!username) return;
+if(!username){
+console.log("No trainer logged in");
+return;
+}
 
 const res = await fetch("/trainer/"+username);
-
 const data = await res.json();
 
-if(!data) return;
+if(!data || data.success===false){
+console.log("Trainer not found");
+return;
+}
 
-document.getElementById("trainerName").innerText = data.username;
-
-document.getElementById("badges").innerText = data.badges;
+document.getElementById("trainerName").innerText = data.username || "";
+document.getElementById("starterName").innerText = data.starter || "Not chosen";
+document.getElementById("badges").innerText = data.badges || 0;
 
 if(data.starter){
 
-document.getElementById("starterName").innerText = data.starter;
+const starter = data.starter.toLowerCase();
 
-const name = data.starter.toLowerCase();
+document.getElementById("starterGif").src =
+"/pokemon/"+starter+".gif";
 
-document.getElementById("starterGif").src = "/pokemon/"+name+".gif";
+}
 
 }
 
