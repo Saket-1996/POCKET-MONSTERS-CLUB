@@ -52,7 +52,35 @@ async function loginTrainer() {
 
 }
 
+async function buyPass(){
 
+const username = localStorage.getItem("trainer");
+
+const res = await fetch("/activatePass",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({username})
+
+});
+
+const data = await res.json();
+
+if(data.success){
+
+alert("Season Pass Activated");
+
+}else{
+
+alert("Error activating pass");
+
+}
+
+}
 
 // ---------- STARTER LIST ----------
 
