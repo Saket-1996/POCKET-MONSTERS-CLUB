@@ -92,73 +92,72 @@ app.get("/starters", (req, res) => {
 // SELECT STARTER
 app.post("/selectStarter", (req, res) => {
 
-    const username = req.body.username;
-    const starter = req.body.starter;
+const username = req.body.username;
+const starter = req.body.starter;
 
-    console.log("Request:", username, starter);
+console.log("Request:", username, starter);
 
-    if (!username || !starter) {
-        return res.json({ success: false });
-    }
-
-    db.get(
-        "SELECT starter FROM trainers WHERE username=?", [username],
-        (err, row) => {
-
-            if (err) {
-                console.log("DB error:", err);
-                return res.json({ success: false });
-            }
-
-            if (!row) {
-                return res.json({ success: false });
-            }
-
-            // already has starter
-            if (row.starter) {
-                return res.json({ success: false });
-            }
-
-            // check if starter already taken
-            app.post("/selectStarter", (req, res) => {
-
-const {username, starter} = req.body;
-
-db.run(
-"UPDATE trainers SET starter=? WHERE username=?",
-[starter, username],
-function(err){
-
-if(err){
-console.log(err);
-return res.json({success:false});
+if (!username || !starter) {
+    return res.json({ success: false });
 }
 
-res.json({success:true});
+db.get(
+    "SELECT starter FROM trainers WHERE username=?", [username],
+    (err, row) => {
 
-});
-
-});
-
-                    db.run(
-                        "UPDATE trainers SET starter=? WHERE username=?", [starter, username],
-                        function(err3) {
-
-                            if (err3) {
-                                console.log("Update error:", err3);
-                                return res.json({ success: false });
-                            }
-
-                            res.json({ success: true });
-
-                        }
-                    );
-
-                }
-            );
-
+        if (err) {
+            console.log("DB error:", err);
+            return res.json({ success: false });
         }
-    );
+
+        if (!row) {
+            return res.json({ success: false });
+        }
+
+        // already has starter
+        if (row.starter) {
+            return res.json({ success: false });
+        }
+
+        // check if starter already taken
+        app.post("/selectStarter", (req, res) => {
+
+            const { username, starter } = req.body;
+
+            db.run(
+                "UPDATE trainers SET starter=? WHERE username=?", [starter, username],
+                function(err) {
+
+                    if (err) {
+                        console.log(err);
+                        return res.json({ success: false });
+                    }
+
+                    res.json({ success: true });
+
+                });
+
+        });
+
+
+        db.run(
+            "UPDATE trainers SET starter=? WHERE username=?", [starter, username],
+            function(err3) {
+
+                if (err3) {
+                    console.log("Update error:", err3);
+                    return res.json({ success: false });
+                }
+
+                res.json({ success: true });
+
+            }
+        );
+
+    }
+);
+
+});
 
 });
 
@@ -217,6 +216,5 @@ app.post("/awardBadge", (req, res) => {
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log("Server running on port " + PORT);
+    console.log("Server running on port " + PORT);
 });
-
