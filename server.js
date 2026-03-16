@@ -120,18 +120,25 @@ app.post("/selectStarter", (req, res) => {
             }
 
             // check if starter already taken
-            db.get(
-                "SELECT username FROM trainers WHERE starter=?", [starter],
-                (err2, row2) => {
+            app.post("/selectStarter", (req, res) => {
 
-                    if (err2) {
-                        console.log("DB error:", err2);
-                        return res.json({ success: false });
-                    }
+const {username, starter} = req.body;
 
-                    if (row2) {
-                        return res.json({ success: false });
-                    }
+db.run(
+"UPDATE trainers SET starter=? WHERE username=?",
+[starter, username],
+function(err){
+
+if(err){
+console.log(err);
+return res.json({success:false});
+}
+
+res.json({success:true});
+
+});
+
+});
 
                     db.run(
                         "UPDATE trainers SET starter=? WHERE username=?", [starter, username],
