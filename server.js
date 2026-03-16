@@ -194,6 +194,25 @@ app.get("/trainer/:username", (req, res) => {
 
 });
 
+app.post("/activatePass", (req, res) => {
+
+    const { username } = req.body;
+
+    db.run(
+        "UPDATE trainers SET seasonPass=1 WHERE username=?", [username],
+        (err) => {
+
+            if (err) {
+                return res.json({ success: false });
+            }
+
+            res.json({ success: true });
+
+        });
+
+});
+
+
 app.post("/awardBadge", (req, res) => {
 
     const { username } = req.body;
