@@ -211,6 +211,8 @@ async function loadTrainer(){
 
 const username = localStorage.getItem("trainer");
 
+if(!username) return;
+
 const res = await fetch("/trainer/"+username);
 
 const data = await res.json();
@@ -218,6 +220,7 @@ const data = await res.json();
 if(!data) return;
 
 document.getElementById("trainerName").innerText = data.username;
+
 document.getElementById("badges").innerText = data.badges;
 
 if(data.starter){
@@ -228,6 +231,10 @@ const name = data.starter.toLowerCase();
 
 document.getElementById("starterGif").src = "/pokemon/"+name+".gif";
 
+}
+
+if(data.seasonPass==1){
+document.getElementById("seasonPassBox").innerHTML="Season Pass Active";
 }
 
 }
